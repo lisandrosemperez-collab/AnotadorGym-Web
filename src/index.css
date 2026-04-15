@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #3C6E71;
+  --color-secondary: #284B63;
+  
+  /* 🧱 Backgrounds */
+  --color-background: #FFFFFF;
+  --color-card: #F5F7F7;
+
+  /* 🔤 Textos */
+  --color-text-primary: #353535;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+  
+  /* 🔘 Estados UI */
+  --color-active: #3C6E71;
+  --color-inactive: #A0AEC0;
+  
+  /* 🧩 Bordes / separadores */
+  --color-border: #E5E7EB;
+  
+  /* ✨ Extras */
+  --color-accent-light: #70A7A8;
+}
+
+.dark{    
+  --color-primary: #70A7A8;
+  --color-secondary: #3C6E71;
+  
+  /* 🧱 Backgrounds */
+  --color-background: #0F1A1A;
+  --color-card: #162424;
+  
+  /* 🔤 Textos */
+  --color-text-primary: #E6F0F0;
+  --color-text-secondary: #A8C1C1;
+  --color-text-muted: #6B8A8A;
+  
+  /* 🔘 Estados */
+  --color-active: #70A7A8;
+  --color-inactive: #4B6363;
+  
+  /* 🧩 Bordes */
+  --color-border: #243838;
+  
+  /* ✨ Extras */
+  --color-accent-light: #8FCFCF;
+}
+
+@layer base {
+  body {     
+    @apply min-h-screen antialiased transition-colors duration-600;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);      
+  }
+
+  input{
+    @apply p-2 w-full border rounded-t-lg focus:ring-9 focus:ring-blue-500 outline-none;
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+  }
+
+  div{
+    @apply items-center justify-start transition-colors duration-600;
+  }
+
+  article {
+    @apply p-4 rounded-xl shadow-md border mb-4;
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+  }
+
+  button{
+    @apply transition-colors duration-400 rounded-lg disabled:opacity-50;   
+    background-color: var(--color-card);
+    color: var(--color-text-primary);
+  }
+  button:hover {    
+    color:var(--color-primary);
+  }
+
+  h1 { @apply text-3xl font-bold; }
+  h2 { @apply text-2xl font-semibold; }
+  h3 { @apply text-xl font-semibold; }
+  h4 { @apply text-lg font-medium; }
+  h5 { @apply text-base font-medium; }
+
+  p {
+    @apply text-sm;
+    color: var(--color-text-secondary);
+  }
+
+  span{
+    @apply text-xl;
+     color: var(--color-text-secondary);
+  }
+
+  small {
+    @apply text-xs;
+    color: var(--color-text-muted);
+  }
+
+  .nav-item {
+    @apply flex flex-col items-center relative justify-center text-xs w-full;
+    color: var(--color-text-primary);
+  }
+
+  .nav-item.active {
+    color: var(--color-primary);
+  }
+
+  .nav-item:hover {
+    @apply transition-colors duration-400;
+    color: var(--color-primary);
+  }
+
+  .nav-bar{
+    @apply relative flex items-center justify-center w-full pt-2 pb-1;
+    background-color: var(--color-card);
+  }
+
+  .eliminar-button {
+    @apply p-1 rounded-md text-lg transition-colors cursor-pointer;        
+  }
+  .eliminar-button:hover {    
+    background-color: var(--color-secondary);
+    color: var(--color-red-400);
+  }
+}
