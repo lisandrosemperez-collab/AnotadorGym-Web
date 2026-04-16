@@ -1,75 +1,66 @@
-# React + TypeScript + Vite
+# AnotadorGym Web 🏋️‍♂️💻
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Parte integral del ecosistema **AnotadorGym**, esta aplicación web desarrollada con **React 19** y **Vite** ofrece una interfaz moderna y eficiente para la gestión de rutinas y ejercicios, conectada a una API robusta en **.NET 9**.
 
-Currently, two official plugins are available:
+## 🚀 Características Principales
+- **Gestión Multiplataforma**: Sincronización total con la base de datos utilizada por la versión móvil (MAUI).
+- **Sistema de Autenticación Completo**: Login con validación de credenciales y persistencia de sesión segura.
+- **Autorización Basada en Roles (RBAC)**:
+  - **Admin**: Acceso total a funcionalidades de gestión e información.
+  - **Invitado**: Acceso de solo lectura a ejercicios y rutinas.
+- **Interfaz Adaptativa**: Implementación de **Dark & Light Mode** para una mejor experiencia de usuario.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Stack Tecnológico
 
-## React Compiler
+- **React 19** & **Vite**: Desarrollo ágil y performance optimizada.
+- **Tailwind CSS**: Diseño responsive y moderno mediante utilidades.
+- **TypeScript**: Código robusto y mantenible con tipado estricto.
+- **React Router**: Gestión de navegación SPA.
+- **Lucide React**: Set de iconos vectoriales optimizado.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## 🏗️ Arquitectura y Funcionalidades Clave
 
-Note: This will impact Vite dev & build performances.
+### 🔒 Seguridad y Rutas Protegidas
+ Se implementó una lógica de seguridad avanzada mediante dos mecanismos:
 
-## Expanding the ESLint configuration
+- **Protected Route**: Componente de alto orden (**HOC**) que envuelve páginas completas (como Importar Rutina), redirigiendo al login si no hay un token válido o el rol no es suficiente.
+- **Protected Element**: Componentes que se renderizan condicionalmente según el **rol del usuario** (ej: un botón de "Eliminar" que solo ve el Admin).
+- **Token JWT**: Manejo de autenticación con recepción de token, validación de expiración y almacenamiento de **Claims** (Roles).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 📄 Páginas del Sistema
+- **Ejercicios**: Listado completo con filtros, consumiendo datos directamente desde la API en **Render**.
+- **Rutinas**: Visualización de planes de entrenamiento estructurados.
+- **Importar Rutina** (Admin Only): Página exclusiva para la carga masiva de datos. Actualmente configurada para validar la funcionalidad de rutas protegidas antes de su implementación final.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🎨 Estilos y Temas
+- **Index.css**: Configuración base de Tailwind y definición de variables de CSS para el manejo de temas.
+- **DarkMode**: Implementación mediante clases de Tailwind controladas por un estado global, permitiendo un cambio fluido entre tema claro y oscuro.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## ⚙️ Configuración del Proyecto
+**Variables de Entorno**
+El proyecto utiliza un archivo .env (no incluido en el repositorio por seguridad) para configurar la conexión:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Fragmento de código**
+```env
+VITE_API_URL=https://anotadorgymappapi.onrender.com/api
+```
+Se incluye un archivo .env.example como referencia.
+
+**Instalación y Despliegue**
+
+```bash
+Clonar el repositorio.
+# 1. Instalar dependencias
+npm install
+# 2. Ejecutar en modo desarrollo
+npm run dev
+# 3. Construir para producción
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🌐 Deploy
+La aplicación se encuentra desplegada en Vercel, configurada con un archivo vercel.json para el manejo de rutas SPA (Rewrites) y asegurar que el refresco de página funcione correctamente en cualquier ruta.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**URL del Proyecto**: https://anotador-gym-web.vercel.app/
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Desarrollado por Lisandro Semperez** - Software Developer
