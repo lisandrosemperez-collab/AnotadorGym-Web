@@ -6,15 +6,15 @@ export const useEjercicios = () => {
 
     const getEjercicios = async (): Promise<EjercicioDTO[]> => {
         // Usamos callApi para que también use el token y maneje el 401
-        return await callApi("/ejercicios/all");
+        return await callApi("/ejercicio/todos");
     };
 
     const deleteEjercicio = async (ejercicioId: number): Promise<void> => {
-        return await callApi(`/ejercicios/${ejercicioId}`, { method: "DELETE" });
+        return await callApi(`/ejercicio/${ejercicioId}`, { method: "DELETE" });
     };
 
     const updateEjercicio = async (ejercicioId: number, updatedData: Partial<EjercicioDTO>): Promise<void> => {
-        return await callApi(`/ejercicios/${ejercicioId}`, {
+        return await callApi(`/ejercicio/${ejercicioId}`, {
             method: "PATCH",
             body: JSON.stringify(updatedData),
         });

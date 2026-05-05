@@ -10,7 +10,7 @@ export const useRutinas = () => {
 
     const GetRutinas = async (): Promise<RutinaDto[]> => {
         try {               
-            const data: ApiResponse = await callApi("/rutinas", { method: "GET"});
+            const data: ApiResponse = await callApi("/rutina", { method: "GET"});
             return data.items;
         } catch (error) {
             console.error("Error fetching rutinas:", error);
