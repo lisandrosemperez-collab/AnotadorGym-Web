@@ -79,7 +79,7 @@ const loginPage = () => {
                             type="button" // IMPORTANTE: type="button" para que no dispare el submit del form por error
                             onClick={() => {
                                 setUserName("Invitado");
-                                setPassword("invitado");
+                                setPassword("Invitado");
                             }}
                             className="w-full py-2 border-2 border-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
                         >
