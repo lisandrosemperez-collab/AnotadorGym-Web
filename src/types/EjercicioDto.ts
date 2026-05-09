@@ -1,7 +1,8 @@
 export interface EjercicioDTO{
     nombre : string
     ejercicioId : number
-    descripcion : string
+    descripcion : string    
+    urlVideo : string
     musculoPrimario? : MusculoDTO
     musculosSecundarios? : MusculoDTO[]
     grupoMuscular? : GrupoMuscularDTO
