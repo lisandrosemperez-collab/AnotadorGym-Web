@@ -2,6 +2,7 @@ import useEjercicio from "../hooks/useEjercicio";
 import { useState,useEffect } from "react";
 import type { EjercicioDTO } from "../types/EjercicioDto";
 import ProtectedElement from "../components/Auth/ProtectedElement";
+import { VideoPreview } from "../components/VideoPreview";
 
 const EjerciciosPage = () => {    
     const [ejercicios, setEjercicios] = useState<EjercicioDTO[]>([]);
@@ -74,7 +75,12 @@ const EjerciciosPage = () => {
                             <p>
                                 {ejercicio.grupoMuscular?.nombre}
                             </p>
-                            <p>{ejercicio.descripcion}</p>                            
+                            <p>{ejercicio.descripcion}</p>          
+                            <VideoPreview
+                                url={ejercicio.urlVideo}
+                                title={ejercicio.nombre}
+                                className="mb-3"
+                            />                  
                         </article>
                     ))}
                 </div>                
