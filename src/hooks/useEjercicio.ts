@@ -6,7 +6,7 @@ export const useEjercicios = () => {
 
     const getEjercicios = async (): Promise<EjercicioDTO[]> => {
         // Usamos callApi para que también use el token y maneje el 401
-        return await callApi("/ejercicio/todos");
+        return await callApi("/ejercicio/exportar", { method: "GET" });
     };
 
     const deleteEjercicio = async (ejercicioId: number): Promise<void> => {
