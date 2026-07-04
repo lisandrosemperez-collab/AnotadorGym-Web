@@ -8,6 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, roleRequired }: ProtectedRouteProps) => {
+
     const { token, exp,userRole } = useAuth();
     const isExpired = exp ? exp * 1000 < Date.now() : true;
 
@@ -15,7 +16,7 @@ const ProtectedRoute = ({ children, roleRequired }: ProtectedRouteProps) => {
         return <Navigate to="/login" replace />;
     }
 
-    if(roleRequired && userRole === null) {        
+    if(roleRequired && userRole === null) {
         return <div>Cargando permisos...</div>;
     }
 

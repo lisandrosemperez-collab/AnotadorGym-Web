@@ -1,32 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const loginPage = () => {
-    const { loginUser, token, exp } = useAuth();    
+    const { loginUser } = useAuth();   
     const navigate = useNavigate();
 
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-               document.title = "Iniciar Sesión - GymApp";
-        if (token && exp && exp * 1000 > Date.now()) {                                                    
-            navigate("/rutinas");
-        }
-    },[token, exp]);
+    const [loading, setLoading] = useState(false);    
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
-        try {        
+        try {                    
             const isLogged = await loginUser(userName, password);
             if (isLogged) {
-                navigate("/rutinas");
+                navigate("/rutinas");                
             }else{
                 setError("Credenciales incorrectas");
             }

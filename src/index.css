@@ -121,6 +121,52 @@
     background-color: var(--color-card);
   }
 
+  .training-card {
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+  }
+
+  .training-card-muted {
+    color: var(--color-text-secondary);
+  }
+
+  .training-accent {
+    color: var(--color-primary);
+  }
+
+  .training-chip {
+    background-color: var(--color-accent-light);
+    color: var(--color-secondary);
+  }
+
+  .training-button-primary {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+  }
+
+  .training-button-primary:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-background);
+  }
+
+  .training-button-secondary {
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+  }
+
+  .training-button-secondary:hover {
+    background-color: var(--color-background);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .training-item-active {
+    border-color: var(--color-primary);
+    background-color: var(--color-accent-light);
+  }
+
   .eliminar-button {
     @apply p-1 rounded-md text-lg transition-colors cursor-pointer;        
   }

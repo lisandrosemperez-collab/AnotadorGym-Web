@@ -31,7 +31,7 @@ export const login = async (userName: string, password: string) : Promise<LoginR
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al iniciar sesión");        
+        throw new Error(errorData.message || "Error al iniciar sesión");
     }
 
     return await response.json();
