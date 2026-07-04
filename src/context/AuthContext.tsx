@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: Props) => {
         try{
 
             const data = await authService.login(userName,password);
-            const token = data.tokenString;
+            const token = data.token;
             if (token) {
                 localStorage.setItem("token", token);
                 setToken(token);
