@@ -1,5 +1,3 @@
-import type { promises } from "dns";
-
 interface LoginResponse {
     error: number;
     success: boolean;
