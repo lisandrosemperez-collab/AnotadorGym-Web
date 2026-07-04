@@ -34,10 +34,10 @@ export const RutinaCard = ({ rutina }: Props) => {
             <header>
                 <h2 className="flex flex-row items-center">{rutina.nombre}
                     <span onClick={toggle} className="cursor-pointer ml-2 mr-4 hover:text-var(--color-secondary)">{abierto ? "  ▲" : "  ▼"}</span>
-                    <ProtectedElement roleRequired="Admin">
+                    <ProtectedElement roleRequired={["Admin"]}>
                         <button onClick={() => handleAction()} className="eliminar-button">🗑️</button>
                     </ProtectedElement>
-                    <ProtectedElement roleRequired="Admin">
+                    <ProtectedElement roleRequired={["Admin"]}>
                         <button onClick={() => handleAction()} className="eliminar-button">✏️</button>
                     </ProtectedElement>
                 </h2>                

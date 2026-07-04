@@ -65,10 +65,10 @@ const EjerciciosPage = () => {
                         <article key={ejercicio.ejercicioId} className="flex flex-col shadow-xl transition-all duration-400">
                             <div className="flex flex-row gap-4">
                                 <h3>{ejercicio.nombre}</h3>
-                                <ProtectedElement roleRequired="Admin">
+                                <ProtectedElement roleRequired={["Admin"]}>
                                     <button className="eliminar-button" onClick={async () => await deleteEjercicio(ejercicio.ejercicioId)}>🗑️</button>
                                 </ProtectedElement>                                
-                                <ProtectedElement roleRequired="Admin">
+                                <ProtectedElement roleRequired={["Admin"]}>
                                     <button className="eliminar-button" onClick={async () => await updateEjercicio(ejercicio.ejercicioId, { nombre: ejercicio.nombre })}>✏️</button>
                                 </ProtectedElement>
                             </div>
