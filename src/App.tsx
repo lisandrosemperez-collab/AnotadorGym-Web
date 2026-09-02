@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { TabBar } from "./components/TabBar";
 import ImportarRutinasPage from "./pages/ImportarRutinasPage";
 import EntrenamientoPage from "./pages/EntrenamientoPage";
+import RegistroPage from "./pages/RegistroPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<AuthRedirect />} />
                 <Route path="/login" element={<AuthRedirect />} />
+                <Route path="/register" element={<RegistroPage />} />
                 <Route path="/ejercicios" element={
                   <ProtectedRoute>
                     <EjerciciosPage />

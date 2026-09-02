@@ -6,34 +6,35 @@ export interface RutinaDto{
     tiempoPorSesion : string
     dificultad : string
     frecuenciaPorGrupo : string    
-    rutinaId : number
-    semanas? : RutinaSemanaDto[]
+    rutinaId : number;
+    semanas : RutinaSemanaDto[]
 }
 
 export interface RutinaSemanaDto{
-    rutinaSemanaId : number
+    rutinaSemanaId : number;
     nombreSemana : string
     numeroSemana : number
-    dias? : RutinaDiaDto[]
+    dias : RutinaDiaDto[]
 }
 
 export interface RutinaDiaDto{
     nombreRutinaDia : string
     numeroDia : number
-    rutinaDiaId : number
-    ejercicios? : RutinaEjercicioDto[]
+    rutinaDiaId : number;
+    ejercicios : RutinaEjercicioDto[]
 }
 
 export interface RutinaEjercicioDto{
     ejercicio: EjercicioDTO
-    series?: RutinaSeriesDto[]
+    ejercicioId : number | null;
+    series: RutinaSeriesDto[]
     numeroEjercicio: number
-    rutinaEjercicioId : number
+    rutinaEjercicioId : number;
 }
 
 export interface RutinaSeriesDto{
-    rutinaSerieId : number
-    descanso : string
+    rutinaSerieId : number;
+    descanso : number
     repeticiones : number
     porcentaje1RM : number
     numeroSerie : number

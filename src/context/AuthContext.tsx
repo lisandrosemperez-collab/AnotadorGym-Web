@@ -7,7 +7,7 @@ interface MyTokenPayload{
     unique_name: string;
     email: string;
     nameid: string;
-    exp: number;
+    exp: number;    
 }
 
 type Props = {
@@ -22,7 +22,7 @@ type AuthContextType = {
     logoutUser: () => void;
     userId: number | null;
     userName: string | null;
-    email: string | null;
+    email: string | null;    
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,10 +35,11 @@ export const AuthProvider = ({ children }: Props) => {
     userId: null as number | null,
     userName: null as string | null,
     email: null as string | null,
-    exp: null as number | null
+    exp: null as number | null,    
     });
 
     const setAuthFromToken = (token: string) => {
+        
         const decoded = jwtDecode<MyTokenPayload>(token);         
         
         if (decoded.exp * 1000 <= Date.now()) {
@@ -51,8 +52,10 @@ export const AuthProvider = ({ children }: Props) => {
             userId: parseInt(decoded.nameid),
             userName: decoded.unique_name,
             email: decoded.email,
-            exp: decoded.exp
+            exp: decoded.exp,              
         });
+
+        console.log("Token decodificado:", decoded);
     }
 
     useEffect (() => {        
@@ -95,7 +98,7 @@ export const AuthProvider = ({ children }: Props) => {
     console.log("Auth state:", auth);
 
     return (
-        <AuthContext.Provider value={{ token: auth.token, userRole: auth.userRole, exp: auth.exp, loginUser, logoutUser, userId: auth.userId, userName: auth.userName, email: auth.email }}>            
+        <AuthContext.Provider value={{ token: auth.token, userRole: auth.userRole, exp: auth.exp, loginUser, logoutUser, userId: auth.userId, userName: auth.userName, email: auth.email}}>            
             {children}
         </AuthContext.Provider>
     );

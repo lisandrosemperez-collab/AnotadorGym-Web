@@ -32,7 +32,8 @@ const loginPage = () => {
 
     return (
         <main className="flex flex-col items-center justify-center p-4 min-h-[60vh]">
-                <h2 className="text-2xl font-bold mb-6">Iniciar Sesión</h2> 
+            <h2 className="text-2xl font-bold mb-6">Iniciar Sesión</h2> 
+            
             <div className="flex items-center justify-center shadow-lg p-8 max-w-md">                
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">                
                     <div className="flex flex-col gap-1">
@@ -59,7 +60,14 @@ const loginPage = () => {
                         />
                     </div>
                     
-                    <button type="submit" className="w-full py-3" disabled={loading}>{loading ? "Cargando..." : "Iniciar Sesión"}</button>                        
+                    <button type="submit" className="w-full py-3" disabled={loading}>{loading ? "Cargando..." : "Iniciar Sesión"}</button>
+
+                    <button
+                        type="button"
+                        className="w-full py-3 border border-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        onClick={() => navigate("/register")}>
+                        Registrarse
+                    </button>
 
                         {/* BOTÓN DE INVITADO */}
                         <div className="relative flex items-center py-2">
@@ -82,6 +90,7 @@ const loginPage = () => {
                     {error && <p style={{ color: "red" }}>{error}</p>}
                 </form>
             </div>
+            
         </main>
     );
 }

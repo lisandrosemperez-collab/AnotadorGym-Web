@@ -1,6 +1,6 @@
 export interface EjercicioDTO{
     nombre : string
-    ejercicioId : number
+    ejercicioId : number | null;
     descripcion : string    
     urlVideo : string
     musculoPrimario? : MusculoDTO

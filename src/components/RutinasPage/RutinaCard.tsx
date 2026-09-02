@@ -11,7 +11,7 @@ type Props = {
 export const RutinaCard = ({ rutina }: Props) => {
 
     const { userRole } = useAuth();
-    const [abierto, setAbierto] = React.useState(false);
+    const [abierto, setAbierto] = React.useState(false);    
 
     const handleAction = () => {
         console.log("Validando rol antes de ejecutar:", userRole);
@@ -53,7 +53,7 @@ export const RutinaCard = ({ rutina }: Props) => {
             {abierto && (
                 <section className="mt-4">
                     {rutina.semanas?.map(s => (
-                        <SemanaItem key={s.rutinaSemanaId} semana={s} />
+                        <SemanaItem key={s.rutinaSemanaId} semana={s} rutinaId={rutina.rutinaId}/>
                     ))}
                 </section>
             )}

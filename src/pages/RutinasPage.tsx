@@ -7,10 +7,11 @@ const rutinasPage = () => {
     const [rutinas, setRutinas] = useState<RutinaDto[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const { GetRutinas } = useRutinas();
+    
+    const { obtenerRutinas: getRutinas } = useRutinas();
 
     useEffect(() => {
-        GetRutinas()
+        getRutinas()
             .then(data => {                
                 setRutinas(data);
                 setLoading(false);

@@ -3,10 +3,11 @@ import { useState } from "react";
 import DiaItem from "./DiaItem";
 
 type Props = {
-    semana: RutinaSemanaDto
+    semana: RutinaSemanaDto    
+    rutinaId?: number;
 }
 
-const SemanaItem = ({semana} : Props) => {
+const SemanaItem = ({semana, rutinaId} : Props) => {
     const [abierto, setAbierto] = useState(false);
     const toggle = () => { setAbierto(!abierto) }
 
@@ -20,7 +21,7 @@ const SemanaItem = ({semana} : Props) => {
             {abierto && (
             <section className="mt-4">                                       
                 {semana.dias?.map(d => (
-                    <DiaItem key={d.rutinaDiaId} dia={d} />
+                    <DiaItem key={d.rutinaDiaId} dia={d} rutinaId={rutinaId} />
                 ))}
             </section>)}
         </article>

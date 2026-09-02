@@ -39,7 +39,7 @@ const ProtectedElement = ({ children, roleRequired }: Props) => {
                 <div 
                     className="absolute z-index[100] top-[110%] left-1/2 -translate-x-1/2 bg-red-600 text-white text-[14px] font-bold py-1 px-2 rounded shadow-2xl whitespace-nowrap animate-bounce"
                     style={{ pointerEvents: 'none' }}>
-                    (¡ACCESO DENEGADO! Requerido: {roleRequired}, Tenés: {userRole})
+                    (¡ACCESO DENEGADO! Requerido: {roleRequired?.join(", ")}, Tenés: {userRole})
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-b-red-600"></div>
                 </div>
             )}
