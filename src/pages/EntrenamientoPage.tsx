@@ -15,7 +15,8 @@ const EntrenamientoPage = () => {
     const navigation = useNavigate();
 
     const [searchParams] = useSearchParams();    
-
+    const rutinaIdParam = searchParams.get("rutinaId");
+    const diaIdParam = searchParams.get("diaId");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -33,9 +34,6 @@ const EntrenamientoPage = () => {
       // 1. Buscar parámetros opcionales
       // ==========================================
 
-      const rutinaIdParam = searchParams.get("rutinaId");
-      const diaIdParam = searchParams.get("diaId");
-
       const rutinaId = rutinaIdParam
           ? Number(rutinaIdParam)
           : null;
@@ -52,7 +50,7 @@ const EntrenamientoPage = () => {
           entrenamientoHook.entrenamiento;
       
       // ==========================================
-      // 3. Si no está en memoria → buscar local
+      // 2.1 Si no está en memoria → buscar local
       // ==========================================
 
       if (!entrenamientoActivo) {
@@ -62,7 +60,7 @@ const EntrenamientoPage = () => {
       }
 
       // ==========================================
-      // 4. Si no está local → buscar servidor
+      // 2.2 Si no está local → buscar servidor
       // ==========================================
 
       if (!entrenamientoActivo) {
@@ -72,76 +70,137 @@ const EntrenamientoPage = () => {
       }
             
       // ==========================================
-      // 5. Tenemos entrenamiento activo
+      // 3. Tenemos entrenamiento activo
       // ==========================================
 
       if (entrenamientoActivo) {
 
-        // --------------------------------------
-        // Cargar su rutina correspondiente
-        // --------------------------------------
+        /*
+        * IMPORTANTE:
+        *
+        * No nos importa si vino de memoria, local o servidor.
+        * A partir de acá trabajamos con el mismo entrenamiento.
+        *
+        * Buscamos la rutina solamente UNA VEZ.
+        */
 
-        // Si tenemos rutinaId desde RutinaPage,
-        // usamos esa rutina.
-        //
-        // Si NO tenemos rutinaId, necesitamos
-        // obtener la rutina correspondiente al
-        // entrenamiento activo.
+        const rutinaIdEntrenamiento =
+                entrenamientoActivo.rutinaDia?.rutinaSemana?.rutinaId;
+        if (rutinaIdEntrenamiento) {
 
-        let rutinaActual: RutinaDto | null = null;
+                const rutina =
+                    await rutinasHook.obtenerRutinaPorId(
+                        rutinaIdEntrenamiento
+                    );
 
-        if (rutinaId) {
-            // Venimos desde RutinaPage
-          rutinaActual =
-              await rutinasHook.obtenerRutinaPorId(rutinaId);
-        }else if (entrenamientoHook.entrenamiento) {
-          // Entramos directamente a EntrenamientoPage
-          // Necesitamos obtener la rutina a partir del día
-          rutinaActual =
-              await rutinasHook.obtenerRutinaPorDia(
-                  entrenamientoHook.entrenamiento.rutinaDiaId
-              );
-        }
+                if (rutina) {
+                    rutinasHook.setRutina(rutina);
+                }
+            }
 
+            /*
+             * El entrenamiento ya existe.
+             *
+             * No usamos rutinaId/diaId de la URL para crear otro.
+             * El usuario continúa el entrenamiento existente.
+             */
 
-        if (!rutinaActual) {
-            setError(
-                "No se pudo obtener la rutina correspondiente al entrenamiento."
-            );
-
-            navigation("/rutinas");
             return;
-        }
-
-        const rutinaActivaId = await rutinasHook.cargarRutinaActiva();
-
-        if (!rutinaActivaId) {
-            setError(
-                "No tenés una rutina activa. Seleccioná una rutina para comenzar."
-            );
-
-            navigation("/rutinas");
-            return;
-        }
-
-        const rutina = await rutinasHook.obtenerRutinaPorId(rutinaActivaId.rutinaId);
-
-        if (!rutina) {
-            setError("No se pudo obtener la rutina activa.");
-            return;
-        }        
-          
       }
 
       // ==========================================
-      // 6. Si no hay entrenamiento activo, cargamos la rutina activa
+      // 4. NO HAY ENTRENAMIENTO ACTIVO
       // ==========================================
+      
+      if (!rutinaId) {
 
-      if(!rutinasHook.rutinaActual){
-        
+          setError(
+              "No hay un entrenamiento activo ni una rutina seleccionada."
+          );
+
+          navigation("/rutinas");
+          return;
+      }
+      
+      // ============================================================
+      // 5. CARGAR RUTINA SELECCIONADA
+      // ============================================================
+
+      const rutinaSeleccionada =
+          await rutinasHook.obtenerRutinaPorId(rutinaId);
+
+      if (!rutinaSeleccionada) {
+
+          setError(
+              "No se pudo obtener la rutina seleccionada."
+          );
+
+          navigation("/rutinas");
+          return;
+      }
+
+      rutinasHook.setRutina(rutinaSeleccionada);
+      
+      // ============================================================
+      // 6. NO HAY DÍA SELECCIONADO
+      // ============================================================
+
+      if (!diaId) {
+
+          /*
+            * No creamos entrenamiento todavía.
+            *
+            * La UI mostrará SelectorSemanaDia.
+            */
+
+          return;
+      }
+      
+      // ============================================================
+      // 7. BUSCAR DÍA DENTRO DE LA RUTINA
+      // ============================================================
+
+      const diaSeleccionado =
+          rutinaSeleccionada.semanas
+              .flatMap(semana => semana.dias)
+              .find(dia => dia.rutinaDiaId === diaId);
+
+
+      if (!diaSeleccionado) {
+
+          setError(
+              "El día seleccionado no pertenece a la rutina."
+          );
+
+          return;
+      }
+
+      // ============================================================
+      // 8. CREAR ENTRENAMIENTO
+      // ============================================================
+
+      const nuevoEntrenamiento =
+          await entrenamientoHook.entrenamientoActions
+              .crearEntrenamiento(
+                  rutinaId,
+                  diaSeleccionado
+              );
+
+
+      if (!nuevoEntrenamiento) {
+
+          setError(
+              "No se pudo crear el entrenamiento."
+          );
+
+          return;
       }
 
     } catch (error) {
+      console.error(
+            "Error al cargar el entrenamiento:",
+            error
+        );
       setError("Error al cargar la rutina.");      
     } finally {
       setLoading(false);      
@@ -157,37 +216,96 @@ const EntrenamientoPage = () => {
 
   return (
     <div className="w-full max-w-6xl space-y-6">
-      {loading && <p className="training-card-muted">Cargando rutina...</p>}
       
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && (
+        <p className="training-card-muted">
+            Cargando entrenamiento...
+        </p>
+      )}
       
-      {!loading && !entrenamientoHook.entrenamiento && !error && (
-        <p className="training-card-muted">No hay ejercicios disponibles para este entrenamiento.</p>
+      {error && (
+        <p className="text-red-500">
+            {error}
+        </p>
       )}
+      
+      {/* Selector: solamente cuando todavía no hay día seleccionado */}
+      {!loading &&
+          !error &&
+          rutinasHook.rutinaActual &&
+          !diaIdParam && (
+              <SelectorSemanaDia
+                  rutina={rutinasHook.rutinaActual}
+                  onSeleccionarDia={handleSeleccionarDia}
+              />
+          )
+      }
 
-      {rutinasHook.rutinaActual && entrenamientoHook.entrenamiento && (
-        <>
-          <SelectorSemanaDia
-              rutina={rutinasHook.rutinaActual}
-              onSeleccionarDia={handleSeleccionarDia}
-          />
-          <EntrenamientoHeader
-              rutina={rutinasHook.rutinaActual}
-              entrenamiento={entrenamientoHook.entrenamiento}/>
+      {/* Header: se muestra si tenemos rutina + entrenamiento */}
+      {!loading &&
+          !error &&
+          rutinasHook.rutinaActual &&
+          entrenamientoHook.entrenamiento && (
+              <EntrenamientoHeader
+                  rutina={rutinasHook.rutinaActual}
+                  entrenamiento={entrenamientoHook.entrenamiento}
+              />
+          )
+      }
 
-          <EjercicioActualCard ejercicio={entrenamientoHook.ejercicioActivo}
-            acciones={{
-            completarSerie: entrenamientoHook.ejercicioActions.completarSerie,
-            eliminarSerie: entrenamientoHook.ejercicioActions.eliminarSerie,
-            agregarSerie: entrenamientoHook.ejercicioActions.agregarSerie,
-            cambiarPeso: entrenamientoHook.ejercicioActions.cambiarPeso,
-            cambiarRepeticiones: entrenamientoHook.ejercicioActions.cambiarRepeticiones}}/>
+      {/* Ejercicio actual */}
+      {!loading &&
+          !error &&
+          entrenamientoHook.entrenamiento &&
+          entrenamientoHook.ejercicioActivo && (
+              <EjercicioActualCard
+                  ejercicio={entrenamientoHook.ejercicioActivo}
+                  acciones={{
+                      completarSerie:
+                          entrenamientoHook.ejercicioActions.completarSerie,
 
-          <ListaEjercicios
-              ejercicios={entrenamientoHook.entrenamiento.ejercicios}
-              onSeleccionarEjercicio={entrenamientoHook.ejercicioActions.selecionarEjercicioActivo}/>
-        </>
-      )}
+                      eliminarSerie:
+                          entrenamientoHook.ejercicioActions.eliminarSerie,
+
+                      agregarSerie:
+                          entrenamientoHook.ejercicioActions.agregarSerie,
+
+                      cambiarPeso:
+                          entrenamientoHook.ejercicioActions.cambiarPeso,
+
+                      cambiarRepeticiones:
+                          entrenamientoHook.ejercicioActions.cambiarRepeticiones
+                  }}
+              />
+          )
+      }
+
+      {/* Lista de ejercicios */}
+      {!loading &&
+          !error &&
+          entrenamientoHook.entrenamiento && (
+              <ListaEjercicios
+                  ejercicios={
+                      entrenamientoHook.entrenamiento.ejercicios
+                  }
+                  onSeleccionarEjercicio={
+                      entrenamientoHook.ejercicioActions
+                          .selecionarEjercicioActivo
+                  }
+              />
+          )
+      }
+
+      {/* No hay entrenamiento y tampoco se puede seleccionar un día */}
+      {!loading &&
+        !error &&
+        !entrenamientoHook.entrenamiento &&
+        !rutinasHook.rutinaActual && (
+            <p className="training-card-muted">
+                No hay un entrenamiento disponible.
+            </p>
+        )
+      }
 
     </div>
   );

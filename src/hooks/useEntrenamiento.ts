@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useRef,useEffect } from "react";
 import { useApi } from "./useApi";
 import type { EjercicioEntrenadoDTO, EntrenamientoDTO, SerieEntrenadaDTO } from "../types/EntrenamientoDto";
 import { LocalEntrenamientoService } from "../services/localEntrenamientoService";
@@ -6,9 +6,46 @@ import type { RutinaDiaDto, RutinaDto } from "../types/RutinaDto";
 
 export const useEntrenamiento = () => {
     const [entrenamiento, setEntrenamiento] = useState<EntrenamientoDTO | null>(null);
-    const [rutinaActivaId, setRutinaActiva] = useState<number | null>(null);
+    const entrenamientoRef = useRef<EntrenamientoDTO | null>(null);
     const [ejercicioActivoId, setEjercicioActivoId] = useState<number | null>(null);
     const { callApi } = useApi();
+
+    useEffect(() => {
+        entrenamientoRef.current = entrenamiento;
+    }, [entrenamiento]);
+
+    useEffect(() => {
+    const intervalo = setInterval(async () => {
+        const entrenamientoActual =
+            entrenamientoRef.current;    
+
+        if (!entrenamientoActual || entrenamientoActual.completado) {
+            return;
+        }
+
+        try {
+            await guardarEntrenamientoLocal(
+                entrenamientoActual
+            );
+
+            await sincronizarEntrenamiento(
+                entrenamientoActual
+            );
+
+        } catch (error) {
+            console.error(
+                "Error sincronizando entrenamiento:",
+                error
+            );
+        }
+
+    }, 5 * 60 * 1000);
+
+    return () => {
+        clearInterval(intervalo);
+    };
+    }, []);
+
 
     const ejercicioActivo = entrenamiento?.ejercicios.find(e => e.ejercicioEntrenadoId === ejercicioActivoId) ?? null;
     
@@ -43,7 +80,7 @@ export const useEntrenamiento = () => {
         return null;
     }
 
-    const sincronizarEntrenamiento = async () => {
+    const sincronizarEntrenamiento = async (entrenamiento: EntrenamientoDTO) => {
         if (!entrenamiento)
             return;
         
@@ -55,25 +92,76 @@ export const useEntrenamiento = () => {
         }
     };
 
-    const crearEntrenamiento = async () => {
+    const crearEntrenamiento = async (dia: RutinaDiaDto) : Promise<EntrenamientoDTO | null> => {
         if (!entrenamiento)
-            return;
+            return null;
         
         try {
-            const dto = await callApi("/Entrenamiento", { method: "POST", body: JSON.stringify(entrenamiento) });
-            setEntrenamiento(dto);                        
+            const nuevoEntrenamiento: EntrenamientoDTO = {
+            entrenamientoId: null,
+            rutinaDiaId: dia.rutinaDiaId,
+            rutinaDia: dia,
+            fecha: new Date().toISOString(),
+            duracionSegundos: 0,
+            notas: null,
+            completado: false,
+
+            ejercicios: []
+            };
+
+            const entrenamientoCreado = await callApi("/Entrenamiento", { method: "POST", body: JSON.stringify(nuevoEntrenamiento) });
+            setEntrenamiento(entrenamientoCreado);   
+            return entrenamientoCreado;                     
         } catch (error) {
             console.error("Error creando entrenamiento:", error);
             throw error;
         }
     }
 
-    const guardarEntrenamientoLocal = () => {
+    const guardarEntrenamientoLocal = (entrenamiento:EntrenamientoDTO) => {
 
         if (!entrenamiento)
             return;
 
         LocalEntrenamientoService.guardar(entrenamiento);
+    };
+
+    const finalizarEntrenamiento = async () => {
+        if (!entrenamientoRef.current) {
+            return;
+        }
+
+        try {
+            const entrenamientoFinalizado: EntrenamientoDTO = {
+                ...entrenamientoRef.current,
+                completado: true,                
+            };
+
+            // Actualizamos React
+            setEntrenamiento(entrenamientoFinalizado);
+
+            // Actualizamos local
+            await guardarEntrenamientoLocal(
+                entrenamientoFinalizado
+            );
+
+            // Sincronizamos inmediatamente con DB
+            await sincronizarEntrenamiento(
+                entrenamientoFinalizado
+            );
+
+            // Actualizamos el ref
+            entrenamientoRef.current =
+                entrenamientoFinalizado;
+
+        } catch (error) {
+            console.error(
+                "Error finalizando entrenamiento:",
+                error
+            );
+
+            throw error;
+        }
     };
 
     const eliminarEntrenamientoLocal = () => {
@@ -338,20 +426,20 @@ export const useEntrenamiento = () => {
      entrenamiento,
      ejercicioActivo,
      ejercicioActivoId,
-     rutinaActivaId,
+    
 
     entrenamientoActions: {
-        setEntrenamiento,
-        guardarEntrenamientoLocal,
+        setEntrenamiento,        
         eliminarEntrenamientoLocal,
         cargarEntrenamientoActivoServidor,
-        cargarEntrenamientoActivoLocal,
-        sincronizarEntrenamiento,
-        crearEntrenamiento
+        cargarEntrenamientoActivoLocal,        
+        crearEntrenamiento,
+        finalizarEntrenamiento
     },
 
     ejercicioActions: {
         selecionarEjercicioActivo,
+        ejercicioActivoId,
         completarSerie,
         eliminarSerie,
         agregarSerie,

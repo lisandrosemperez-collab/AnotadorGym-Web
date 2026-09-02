@@ -47,7 +47,7 @@ export const useRutinas = () => {
         return rutina;
     }, [obtenerRutinaPorId, obtenerRutinaActiva]);
 
-    return { obtenerRutinas, obtenerRutinaPorId, cargarRutinaActiva, rutinaActual };
+    return { obtenerRutinas, obtenerRutinaPorId, cargarRutinaActiva, rutinaActual,setRutina };
 }
 
 export default useRutinas;
