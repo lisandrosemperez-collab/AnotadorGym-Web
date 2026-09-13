@@ -5,8 +5,8 @@ import { useEntrenamiento } from "../hooks/useEntrenamiento";
 import EjercicioActualCard from "../components/EntrenamientoPage/EjercicioActualCard";
 import ListaEjercicios from "../components/EntrenamientoPage/ListaEjercicios";
 import EntrenamientoHeader from "../components/EntrenamientoPage/EntrenamientoHeader";
-import type { RutinaDto } from "../types/RutinaDto";
 import SelectorSemanaDia from "../components/EntrenamientoPage/SelectorSemanaDia";
+import type { RutinaDto } from "../types/RutinaDto";
 
 
 const EntrenamientoPage = () => {   
@@ -19,193 +19,289 @@ const EntrenamientoPage = () => {
     const diaIdParam = searchParams.get("diaId");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    cargar();
-  }, []);
-
-  const cargar = async () => {
-        setLoading(true);
-        setError(null);
     
-    try {         
-
-      // ==========================================
-      // 1. Buscar parámetros opcionales
-      // ==========================================
-
-      const rutinaId = rutinaIdParam
-          ? Number(rutinaIdParam)
-          : null;
-
-      const diaId = diaIdParam
-          ? Number(diaIdParam)
-          : null;
-
-      // ==========================================
-      // 2. Buscar entrenamiento activo
-      // ==========================================
-
-      let entrenamientoActivo =
-          entrenamientoHook.entrenamiento;
+    const cargar = async () => {
+          setLoading(true);
+          setError(null);
       
-      // ==========================================
-      // 2.1 Si no está en memoria → buscar local
-      // ==========================================
+      try {         
+  
+        // ==========================================
+        // 1. Buscar parámetros opcionales
+        // ==========================================
+  
+        const rutinaId = rutinaIdParam
+            ? Number(rutinaIdParam)
+            : null;
+  
+        const diaId = diaIdParam
+            ? Number(diaIdParam)
+            : null;
+  
+        // ==========================================
+        // 2. Buscar entrenamiento activo
+        // ==========================================
+  
+        let entrenamientoActivo =
+            entrenamientoHook.entrenamiento;
 
-      if (!entrenamientoActivo) {
-          entrenamientoActivo =
-              await entrenamientoHook.entrenamientoActions
-                  .cargarEntrenamientoActivoLocal();
-      }
+        console.log("ENTRENAMIENTO INICIAL:", entrenamientoActivo);
 
-      // ==========================================
-      // 2.2 Si no está local → buscar servidor
-      // ==========================================
+        
+        // ==========================================
+        // 2.1 Si no está en memoria → buscar local
+        // ==========================================
+  
+        if (!entrenamientoActivo) {
+            entrenamientoActivo =
+                await entrenamientoHook.entrenamientoActions
+                    .cargarEntrenamientoActivoLocal();
+                        console.log("ENTRENAMIENTO LOCAL:", entrenamientoActivo);
 
-      if (!entrenamientoActivo) {
-          entrenamientoActivo =
-              await entrenamientoHook.entrenamientoActions
-                  .cargarEntrenamientoActivoServidor();
-      }
-            
-      // ==========================================
-      // 3. Tenemos entrenamiento activo
-      // ==========================================
+        }
 
-      if (entrenamientoActivo) {
+        // ==========================================
+        // 2.3 Si existe localmente, comprobar que siga
+        //    existiendo en el servidor
+        // ==========================================
+        
+        if (entrenamientoActivo) {
 
-        /*
-        * IMPORTANTE:
-        *
-        * No nos importa si vino de memoria, local o servidor.
-        * A partir de acá trabajamos con el mismo entrenamiento.
-        *
-        * Buscamos la rutina solamente UNA VEZ.
-        */
-
-        const rutinaIdEntrenamiento =
-                entrenamientoActivo.rutinaDia?.rutinaSemana?.rutinaId;
-        if (rutinaIdEntrenamiento) {
-
-                const rutina =
-                    await rutinasHook.obtenerRutinaPorId(
-                        rutinaIdEntrenamiento
+            const existeEnServidor =
+                await entrenamientoHook.entrenamientoActions
+                    .validarEntrenamientoActivoPorId(
+                        entrenamientoActivo.entrenamientoId!
                     );
 
-                if (rutina) {
-                    rutinasHook.setRutina(rutina);
+            if (!existeEnServidor) {
+                entrenamientoHook.entrenamientoActions
+                    .eliminarEntrenamientoLocal();
+                entrenamientoActivo = null;
+            }
+        }
+
+        // ==========================================
+        // 2.3 Si no está local → buscar servidor
+        // ==========================================
+  
+        if (!entrenamientoActivo) {
+            entrenamientoActivo =
+                await entrenamientoHook.entrenamientoActions
+                    .cargarEntrenamientoActivoServidor();
+                        console.log("ENTRENAMIENTO SERVIDOR:", entrenamientoActivo);
+        }
+
+        console.log("ENTRENAMIENTO FINAL:", entrenamientoActivo);
+              
+        // ==========================================
+        // 3. Tenemos entrenamiento activo
+        // ==========================================
+  
+        if (entrenamientoActivo) {
+  
+          /*
+          * IMPORTANTE:
+          *
+          * No nos importa si vino de memoria, local o servidor.
+          * A partir de acá trabajamos con el mismo entrenamiento.
+          *
+          * Buscamos la rutina solamente UNA VEZ.
+          */
+  
+          const rutinaIdEntrenamiento =
+              entrenamientoActivo.rutinaId;
+  
+          if (rutinaIdEntrenamiento) {
+  
+                  const rutina =
+                      await rutinasHook.obtenerRutinaPorId(
+                          rutinaIdEntrenamiento
+                      );
+  
+                  if (rutina) {
+                      rutinasHook.setRutina(rutina);
+                  }
+              }
+  
+              /*
+               * El entrenamiento ya existe.
+               *
+               * No usamos rutinaId/diaId de la URL para crear otro.
+               * El usuario continúa el entrenamiento existente.
+               */
+  
+              return;
+        }
+  
+        // ==========================================
+        // 4. NO HAY ENTRENAMIENTO ACTIVO
+        // ==========================================
+        // Esta será la rutina que finalmente
+        // vamos a utilizar.
+        let rutinaActiva: RutinaDto | null = null;
+        
+        // ==========================================
+        // 4.1 Viene rutina desde la URL
+        // ==========================================
+
+        if (rutinaId) {
+
+            const rutinaUrl =
+                await rutinasHook.obtenerRutinaPorId(rutinaId);
+
+            if (!rutinaUrl) {
+                setError(
+                    "No se encontró la rutina seleccionada."
+                );
+
+                navigation("/rutinas");
+                return;
+            }
+
+
+            // Buscar rutina activa actual
+            rutinaActiva =
+                await rutinasHook.cargarRutinaActiva();
+                console.log("RUTINA ACTIVA:", rutinaActiva);
+
+
+            // --------------------------------------
+            // No hay rutina activa
+            // → usamos la de la URL
+            // --------------------------------------
+
+            if (!rutinaActiva) {
+
+                rutinaActiva = rutinaUrl;
+
+            }
+
+            // --------------------------------------
+            // Hay una rutina activa diferente
+            // --------------------------------------
+
+            else if (
+                rutinaActiva.rutinaId !== rutinaUrl.rutinaId
+            ) {
+
+                const cambiarRutina = window.confirm(
+                    `Ya tenés activa la rutina "${rutinaActiva.nombre}".\n\n` +
+                    `¿Querés cambiar a "${rutinaUrl.nombre}"?`
+                );
+
+                if (cambiarRutina) {
+
+                    await rutinasHook
+                        .establecerRutinaActivaPorId(
+                            rutinaUrl.rutinaId
+                        );
+
+                    rutinaActiva = rutinaUrl;
                 }
             }
 
+            // --------------------------------------
+            // Si era la misma rutina
+            // rutinaActiva ya es correcta.
+            // --------------------------------------
+
+        }
+
+
+        // ==========================================
+        // 4.2 NO viene rutina desde la URL
+        // ==========================================
+
+        else {
+
+            rutinaActiva =
+                await rutinasHook.cargarRutinaActiva();
+
+            if (!rutinaActiva) {
+
+                navigation("/rutinas");
+                return;
+            }
+        }
+
+
+        // ==========================================
+        // 5. Establecer rutina finalmente elegida
+        // ==========================================
+        // Si llegamos acá, rutinaActiva ya representa
+        // la rutina que finalmente eligió el usuario.
+
+        rutinasHook.setRutina(rutinaActiva);
+
+        // ============================================================
+        // 6. NO HAY DÍA SELECCIONADO
+        // ============================================================
+  
+        if (!diaId) {
+  
             /*
-             * El entrenamiento ya existe.
-             *
-             * No usamos rutinaId/diaId de la URL para crear otro.
-             * El usuario continúa el entrenamiento existente.
-             */
-
+              * No creamos entrenamiento todavía.
+              *
+              * La UI mostrará SelectorSemanaDia.
+              */
+  
             return;
-      }
-
-      // ==========================================
-      // 4. NO HAY ENTRENAMIENTO ACTIVO
-      // ==========================================
-      
-      if (!rutinaId) {
-
-          setError(
-              "No hay un entrenamiento activo ni una rutina seleccionada."
+        }
+        
+        // ============================================================
+        // 7. BUSCAR DÍA DENTRO DE LA RUTINA
+        // ============================================================
+  
+        const diaSeleccionado =
+            rutinaActiva?.semanas
+                .flatMap(semana => semana.dias)
+                .find(dia => dia.rutinaDiaId === diaId);
+  
+  
+        if (!diaSeleccionado) {
+  
+            setError(
+                "El día seleccionado no pertenece a la rutina."
+            );
+  
+            return;
+        }
+  
+        // ============================================================
+        // 8. CREAR ENTRENAMIENTO
+        // ============================================================
+  
+        const nuevoEntrenamiento =
+            await entrenamientoHook.entrenamientoActions
+                .crearEntrenamiento(                  
+                    diaSeleccionado
+                );
+  
+  
+        if (!nuevoEntrenamiento) {
+  
+            setError(
+                "No se pudo crear el entrenamiento."
+            );
+  
+            return;
+        }
+  
+      } catch (error) {
+        console.error(
+              "Error al cargar el entrenamiento:",
+              error
           );
-
-          navigation("/rutinas");
-          return;
+        setError("Error al cargar la rutina.");      
+      } finally {
+        setLoading(false);      
       }
-      
-      // ============================================================
-      // 5. CARGAR RUTINA SELECCIONADA
-      // ============================================================
+    }  
 
-      const rutinaSeleccionada =
-          await rutinasHook.obtenerRutinaPorId(rutinaId);
+  useEffect(() => {
+    cargar();
+  }, [rutinaIdParam, diaIdParam]);
 
-      if (!rutinaSeleccionada) {
-
-          setError(
-              "No se pudo obtener la rutina seleccionada."
-          );
-
-          navigation("/rutinas");
-          return;
-      }
-
-      rutinasHook.setRutina(rutinaSeleccionada);
-      
-      // ============================================================
-      // 6. NO HAY DÍA SELECCIONADO
-      // ============================================================
-
-      if (!diaId) {
-
-          /*
-            * No creamos entrenamiento todavía.
-            *
-            * La UI mostrará SelectorSemanaDia.
-            */
-
-          return;
-      }
-      
-      // ============================================================
-      // 7. BUSCAR DÍA DENTRO DE LA RUTINA
-      // ============================================================
-
-      const diaSeleccionado =
-          rutinaSeleccionada.semanas
-              .flatMap(semana => semana.dias)
-              .find(dia => dia.rutinaDiaId === diaId);
-
-
-      if (!diaSeleccionado) {
-
-          setError(
-              "El día seleccionado no pertenece a la rutina."
-          );
-
-          return;
-      }
-
-      // ============================================================
-      // 8. CREAR ENTRENAMIENTO
-      // ============================================================
-
-      const nuevoEntrenamiento =
-          await entrenamientoHook.entrenamientoActions
-              .crearEntrenamiento(
-                  rutinaId,
-                  diaSeleccionado
-              );
-
-
-      if (!nuevoEntrenamiento) {
-
-          setError(
-              "No se pudo crear el entrenamiento."
-          );
-
-          return;
-      }
-
-    } catch (error) {
-      console.error(
-            "Error al cargar el entrenamiento:",
-            error
-        );
-      setError("Error al cargar la rutina.");      
-    } finally {
-      setLoading(false);      
-    }
-  }  
 
   const handleSeleccionarDia = (diaId: number) => {
     console.log("Día seleccionado:", diaId);

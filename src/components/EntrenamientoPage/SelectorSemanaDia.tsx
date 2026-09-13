@@ -11,14 +11,14 @@ const SelectorSemanaDia: FC<SelectorSemanaDiaProps> = ({
     onSeleccionarDia,
 }) => {
     return (
-        <div className="bg-white rounded-xl shadow-md p-6 border space-y-6">
+        <div className="training-card rounded-xl shadow-md p-6 border space-y-6">
 
             <div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold">
                     Seleccioná qué día entrenar
                 </h2>
 
-                <p className="text-gray-500 mt-1">
+                <p className="training-card-muted mt-1">
                     Elegí un día de la rutina para comenzar el entrenamiento.
                 </p>
             </div>
@@ -27,24 +27,24 @@ const SelectorSemanaDia: FC<SelectorSemanaDiaProps> = ({
                 rutina.semanas.map((semana) => (
                     <div key={semana.rutinaSemanaId}>
 
-                        <h3 className="font-semibold text-lg mb-3">
+                        <h3 className="h3 mb-3">
                             Semana {semana.numeroSemana}
                         </h3>
 
                         {semana.dias.length > 0 ? (
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-wrap gap-2">
 
                                 {semana.dias.map((dia) => (
                                     <div
                                         key={dia.rutinaDiaId}
-                                        className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3"
+                                        className="flex items-center justify-between rounded-lg border px-4 py-3 training-card w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
                                     >
                                         <div className="flex items-center gap-3">
                                             <span className="font-medium">
                                                 Día {dia.numeroDia}
                                             </span>
 
-                                            <span className="text-gray-500">
+                                            <span className="training-card-muted">
                                                 {dia.nombreRutinaDia}
                                             </span>
                                         </div>
@@ -56,7 +56,7 @@ const SelectorSemanaDia: FC<SelectorSemanaDiaProps> = ({
                                                     dia.rutinaDiaId
                                                 )
                                             }
-                                            className="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+                                            className="px-4 py-2 rounded-lg training-button-primary font-medium hover:opacity-90 transition"
                                         >
                                             Entrenar
                                         </button>

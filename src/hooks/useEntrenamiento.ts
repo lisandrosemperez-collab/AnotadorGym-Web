@@ -1,8 +1,8 @@
 import { useState,useRef,useEffect } from "react";
 import { useApi } from "./useApi";
-import type { EjercicioEntrenadoDTO, EntrenamientoDTO, SerieEntrenadaDTO } from "../types/EntrenamientoDto";
+import type { EntrenamientoDTO, SerieEntrenadaDTO } from "../types/EntrenamientoDto";
 import { LocalEntrenamientoService } from "../services/localEntrenamientoService";
-import type { RutinaDiaDto, RutinaDto } from "../types/RutinaDto";
+import type { RutinaDiaDto } from "../types/RutinaDto";
 
 export const useEntrenamiento = () => {
     const [entrenamiento, setEntrenamiento] = useState<EntrenamientoDTO | null>(null);
@@ -65,13 +65,18 @@ export const useEntrenamiento = () => {
             }
             return null;
 
-        } catch (error) {
-            console.error("Error obteniendo entrenamiento:", error);            
+        } catch (error: any) {
+        
+            if (error.status === 404) {
+            return null;
+            }
+
+            console.error("Error obteniendo entrenamiento:", error);
             throw error;
         }
     };
     
-    const cargarEntrenamientoActivoLocal = (): EntrenamientoDTO | null => {        
+    const cargarEntrenamientoActivoLocal = (): EntrenamientoDTO | null => {
         const entrenamientoLocal : EntrenamientoDTO | null = LocalEntrenamientoService.leer();
         if (entrenamientoLocal) {
             setEntrenamiento(entrenamientoLocal);
@@ -79,6 +84,27 @@ export const useEntrenamiento = () => {
         }
         return null;
     }
+
+    const validarEntrenamientoActivoPorId = async (entrenamientoId: number): Promise<boolean> => {
+        try {
+            await callApi(
+                `/Entrenamiento/activo/${entrenamientoId}`,
+                {
+                    method: "GET"
+                }
+            );
+
+            return true;
+
+        } catch (error: any) {
+
+            if (error.status === 404) {
+                return false;
+            }
+
+            throw error;
+        }
+    };
 
     const sincronizarEntrenamiento = async (entrenamiento: EntrenamientoDTO) => {
         if (!entrenamiento)
@@ -92,24 +118,18 @@ export const useEntrenamiento = () => {
         }
     };
 
-    const crearEntrenamiento = async (dia: RutinaDiaDto) : Promise<EntrenamientoDTO | null> => {
-        if (!entrenamiento)
-            return null;
-        
+    const crearEntrenamiento = async (dia: RutinaDiaDto) : Promise<EntrenamientoDTO | null> => {              
         try {
-            const nuevoEntrenamiento: EntrenamientoDTO = {
-            entrenamientoId: null,
+            const nuevoEntrenamiento = {
             rutinaDiaId: dia.rutinaDiaId,
-            rutinaDia: dia,
-            fecha: new Date().toISOString(),
-            duracionSegundos: 0,
-            notas: null,
-            completado: false,
-
-            ejercicios: []
+            notas: null
             };
 
-            const entrenamientoCreado = await callApi("/Entrenamiento", { method: "POST", body: JSON.stringify(nuevoEntrenamiento) });
+            const entrenamientoCreado = 
+                await callApi("/Entrenamiento", { 
+                    method: "POST", 
+                    body: JSON.stringify(nuevoEntrenamiento) });
+                    
             setEntrenamiento(entrenamientoCreado);   
             return entrenamientoCreado;                     
         } catch (error) {
@@ -434,6 +454,8 @@ export const useEntrenamiento = () => {
         cargarEntrenamientoActivoServidor,
         cargarEntrenamientoActivoLocal,        
         crearEntrenamiento,
+        agregarEjerciciosDelDia,
+        validarEntrenamientoActivoPorId,
         finalizarEntrenamiento
     },
 

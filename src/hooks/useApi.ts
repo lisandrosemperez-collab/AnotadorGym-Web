@@ -24,7 +24,11 @@ export const useApi = () => {
             throw new Error("Sesión expirada");
         }
 
-        if (!response.ok) throw new Error("Error en la petición");
+        if (!response.ok) {
+        const error = new Error("Error en la petición");
+        (error as any).status = response.status;
+        throw error;
+        }
 
         return response.json();    
     };

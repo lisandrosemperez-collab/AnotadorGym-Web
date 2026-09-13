@@ -9,7 +9,7 @@ type ApiResponse ={
 
 export const useRutinas = () => {
     const { callApi } = useApi();    
-    const { obtenerRutinaActiva } = useUsuario();
+    const { obtenerRutinaActiva, establecerRutinaActiva } = useUsuario();
     const [rutinaActual, setRutina] = useState<RutinaDto | null>(null);
 
     const obtenerRutinas = useCallback(async (): Promise<RutinaDto[]> => {
@@ -47,7 +47,16 @@ export const useRutinas = () => {
         return rutina;
     }, [obtenerRutinaPorId, obtenerRutinaActiva]);
 
-    return { obtenerRutinas, obtenerRutinaPorId, cargarRutinaActiva, rutinaActual,setRutina };
+    const establecerRutinaActivaPorId = useCallback(async (rutinaId: number) => {
+        try {
+            await establecerRutinaActiva(rutinaId);
+        } catch (error) {
+            console.error("Error estableciendo rutina activa:", error);
+            throw error;
+        }
+    }, [establecerRutinaActiva]);
+
+    return { obtenerRutinas, obtenerRutinaPorId, cargarRutinaActiva, rutinaActual,setRutina, establecerRutinaActivaPorId };
 }
 
 export default useRutinas;

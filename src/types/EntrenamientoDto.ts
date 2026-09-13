@@ -9,7 +9,7 @@ export interface EntrenamientoDTO {
     completado: boolean;
     rutinaDiaId: number | null;
     rutinaDia: RutinaDiaDto | null;
-
+    rutinaId: number | null;
     ejercicios: EjercicioEntrenadoDTO[];
 }
 

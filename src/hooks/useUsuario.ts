@@ -13,11 +13,11 @@ export const useUsuario = () => {
 
     const obtenerRutinaActiva = useCallback(async (): Promise<ResultUsuario | null> => {
         try {
-            const data = await callApi("/usuario/rutina-activa", {
+            const data = await callApi("/Usuario/rutina-activa", {
                 method: "GET"
             });
 
-            return data.rutinaActivaId;
+            return data;
 
         } catch (error) {
             console.error("Error obteniendo rutina activa:", error);
@@ -26,7 +26,7 @@ export const useUsuario = () => {
     }, [callApi]);
 
 
-    const guardarRutinaActiva = useCallback(async (rutinaId: number) => {
+    const establecerRutinaActiva = useCallback(async (rutinaId: number) => {
         try {
             return await callApi(`/usuario/rutina-activa/${rutinaId}`, {
                 method: "PUT"
@@ -41,6 +41,6 @@ export const useUsuario = () => {
 
     return {
         obtenerRutinaActiva,
-        guardarRutinaActiva
+        establecerRutinaActiva
     };
 }
