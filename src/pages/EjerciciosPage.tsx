@@ -66,10 +66,10 @@ const EjerciciosPage = () => {
                             <div className="flex flex-row gap-4">
                                 <h3>{ejercicio.nombre}</h3>
                                 <ProtectedElement roleRequired={["Admin"]}>
-                                    <button className="eliminar-button" onClick={async () => await deleteEjercicio(ejercicio.ejercicioId)}>🗑️</button>
+                                    <button className="eliminar-button" onClick={async () => await deleteEjercicio(ejercicio.ejercicioId ? ejercicio.ejercicioId : 0)}>🗑️</button>
                                 </ProtectedElement>                                
                                 <ProtectedElement roleRequired={["Admin"]}>
-                                    <button className="eliminar-button" onClick={async () => await updateEjercicio(ejercicio.ejercicioId, { nombre: ejercicio.nombre })}>✏️</button>
+                                    <button className="eliminar-button" onClick={async () => await updateEjercicio(ejercicio.ejercicioId ? ejercicio.ejercicioId : 0, { nombre: ejercicio.nombre })}>✏️</button>
                                 </ProtectedElement>
                             </div>
                             <p>
