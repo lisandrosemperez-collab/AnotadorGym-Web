@@ -165,6 +165,64 @@
   .training-item-active {
     border-color: var(--color-primary);
     background-color: var(--color-accent-light);
+    color: var(--color-secondary);
+  }
+
+  .training-input {
+    background-color: var(--color-card);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+  }
+
+  .training-input:focus {
+    --tw-ring-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .training-data-panel {
+    @apply rounded-lg border p-4;
+    background-color: var(--color-background);
+    border-color: var(--color-border);
+  }
+
+  .training-data-heading {
+    @apply text-base font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .training-data-list {
+    @apply mt-3 space-y-2;
+  }
+
+  .training-data-row {
+    @apply flex justify-between gap-4;
+  }
+
+  .training-data-label {
+    @apply text-sm;
+    color: var(--color-text-secondary);
+  }
+
+  .training-data-value {
+    @apply text-base font-medium;
+    color: var(--color-text-primary);
+  }
+
+  .training-modal-backdrop {
+    background-color: color-mix(in srgb, var(--color-text-primary) 65%, transparent);
+  }
+
+  .training-checkbox {
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border-radius: 0.25rem;
+    accent-color: var(--color-primary);
+  }
+
+  .training-checkbox:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
 
   .eliminar-button {

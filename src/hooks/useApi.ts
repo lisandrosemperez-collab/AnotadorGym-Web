@@ -24,13 +24,25 @@ export const useApi = () => {
             throw new Error("Sesión expirada");
         }
 
-        if (!response.ok) {
-        const error = new Error("Error en la petición");
-        (error as any).status = response.status;
-        throw error;
+        // 204 No Content: la operación fue exitosa, pero no hay JSON.
+        if (response.status === 204) {
+            return undefined;
         }
 
-        return response.json();    
+        
+        if (!response.ok) {
+            const error = new Error("Error en la petición");
+            (error as any).status = response.status;
+            throw error;
+        }
+        
+        // Evitar intentar interpretar un cuerpo vacío.
+        const text = await response.text();
+
+        if (!text) {
+            return undefined;
+        }
+        return JSON.parse(text);    
     };
     return { callApi };
 }

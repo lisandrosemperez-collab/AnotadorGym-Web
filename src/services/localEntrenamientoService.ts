@@ -15,16 +15,17 @@ export class LocalEntrenamientoService {
 
         const json = localStorage.getItem(STORAGE_KEY);
 
-        if (!json) {
-            return null;
-        }
-        try {
-            return JSON.parse(json) as EntrenamientoDTO;
-        }
-        catch {
-            localStorage.removeItem(STORAGE_KEY);
-            return null;
-        }        
+            if (!json) {
+                return null;
+            }
+
+            try {
+                return JSON.parse(json) as EntrenamientoDTO;
+            }
+            catch {
+                this.eliminar();
+                return null;
+            }
     }
 
     static eliminar(): void {

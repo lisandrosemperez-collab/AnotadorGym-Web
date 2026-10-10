@@ -31,24 +31,24 @@ const EntrenamientoHeader: FC<EntrenamientoHeaderProps> = ({
         entrenamiento.ejercicios.length;
 
     return (
-        <div className="bg-white rounded-xl shadow-md p-6 border">
+        <div className="training-card rounded-xl shadow-md p-6 border">
 
-            <div className="flex justify-between items-start">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                    <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
                         {rutina.nombre}
                     </h1>
 
-                    <p className="text-gray-600 mt-2">
+                    <p className="training-card-muted mt-2">
                         {rutina.descripcion}
                     </p>
                 </div>
 
                 <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        className={`inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3 py-1 text-sm font-semibold ${
                         entrenamiento.completado
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-green-100 text-green-700"
+                            ? "training-chip"
+                            : "training-item-active border"
                     }`}
                 >
                     {entrenamiento.completado
@@ -60,7 +60,7 @@ const EntrenamientoHeader: FC<EntrenamientoHeaderProps> = ({
             <div className="grid grid-cols-4 gap-4 mt-6">
 
                 <div>
-                    <p className="text-gray-500 text-sm">
+                    <p className="training-card-muted text-sm">
                         Duración
                     </p>
 
@@ -72,7 +72,7 @@ const EntrenamientoHeader: FC<EntrenamientoHeaderProps> = ({
                 </div>
 
                 <div>
-                    <p className="text-gray-500 text-sm">
+                    <p className="training-card-muted text-sm">
                         Ejercicios
                     </p>
 
@@ -82,7 +82,7 @@ const EntrenamientoHeader: FC<EntrenamientoHeaderProps> = ({
                 </div>
 
                 <div>
-                    <p className="text-gray-500 text-sm">
+                    <p className="training-card-muted text-sm">
                         Fecha
                     </p>
 
@@ -94,7 +94,7 @@ const EntrenamientoHeader: FC<EntrenamientoHeaderProps> = ({
                 </div>
 
                 <div>
-                    <p className="text-gray-500 text-sm">
+                    <p className="training-card-muted text-sm">
                         Progreso
                     </p>
 
