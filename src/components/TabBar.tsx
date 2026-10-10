@@ -7,7 +7,7 @@ import ProtectedElement from "./Auth/ProtectedElement";
 export const TabBar = () => {
     const { dark, toggleTheme } = useTheme();
     const navigate = useNavigate();
-    const { userName, userId, logoutUser } = useAuth();
+    const { userName, logoutUser } = useAuth();
 
     const handleLogout = () => {
         logoutUser();
