@@ -1,13 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import AuthRedirect from "./components/Auth/AuthRedirect";
 import RutinasPage from "./pages/RutinasPage";
-import EjerciciosPage from "./pages/EjerciciosPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { TabBar } from "./components/TabBar";
 import ImportarRutinasPage from "./pages/ImportarRutinasPage";
 import EntrenamientoPage from "./pages/EntrenamientoPage";
 import RegistroPage from "./pages/RegistroPage";
+
+const EstadisticasPage = lazy(() => import("./pages/EstadisticasPage"));
+const EjerciciosPage = lazy(() => import("./pages/EjerciciosPage"));
 
 function App() {
   return (
@@ -21,7 +24,9 @@ function App() {
                 <Route path="/register" element={<RegistroPage />} />
                 <Route path="/ejercicios" element={
                   <ProtectedRoute>
-                    <EjerciciosPage />
+                    <Suspense fallback={<p className="training-card-muted">Cargando ejercicios...</p>}>
+                      <EjerciciosPage />
+                    </Suspense>
                   </ProtectedRoute>}/>
                 <Route path="/rutinas" element={
                   <ProtectedRoute>
@@ -34,6 +39,12 @@ function App() {
                 <Route path="/entrenamiento" element={
                   <ProtectedRoute>
                     <EntrenamientoPage />
+                  </ProtectedRoute>}/>
+                <Route path="/estadisticas" element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<p className="training-card-muted">Cargando estadísticas...</p>}>
+                      <EstadisticasPage />
+                    </Suspense>
                   </ProtectedRoute>}/>
             </Routes>
         </div>

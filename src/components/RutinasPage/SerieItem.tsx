@@ -4,12 +4,28 @@ type Props = {
     serie: RutinaSeriesDto
 }
 
+const formatearDescanso = (segundos: number) => {
+    const totalSegundos = Math.max(0, Math.floor(segundos));
+    const minutos = Math.floor(totalSegundos / 60);
+    const segundosRestantes = totalSegundos % 60;
+
+    if (minutos > 0 && segundosRestantes > 0) {
+        return `${minutos} min ${segundosRestantes} s`;
+    }
+
+    if (minutos > 0) {
+        return `${minutos} min`;
+    }
+
+    return `${segundosRestantes} s`;
+};
+
 const SerieItem = ({serie} : Props) => {
     return (
-    <div className="flex flex-row items-center gap-3 mb-2">   
+    <div className="mx-auto mb-2 flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
         <strong>Serie {serie.numeroSerie}</strong>
         <div>🔁 {serie.repeticiones} reps</div>
-        <div>💤 {serie.descanso}</div>
+        <div>💤 {formatearDescanso(serie.descanso)}</div>
         <div>⚡ {serie.porcentaje1RM}%</div>
         <div>📊 {tipoSerieTexto[serie.tipo]}</div>
     </div>

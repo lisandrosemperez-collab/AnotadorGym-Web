@@ -12,14 +12,22 @@ const SemanaItem = ({semana, rutinaId} : Props) => {
     const toggle = () => { setAbierto(!abierto) }
 
     return (
-        <article>
-            <header className="flex flex-row items-center gap-3 mb-2" onClick={toggle}>
+        <article className="mx-auto w-full max-w-4xl text-center">
+            <header className="mb-2 flex flex-wrap items-center justify-center gap-3">
                 <h3>Semana {semana.numeroSemana}</h3>
-                <span className="cursor-pointer">{abierto ? "▲" : "▼"}</span>
+                <button
+                    type="button"
+                    aria-expanded={abierto}
+                    aria-label={abierto ? "Contraer semana" : "Expandir semana"}
+                    className="training-button-secondary inline-flex h-8 w-8 items-center justify-center border p-0 text-sm"
+                    onClick={toggle}
+                >
+                    {abierto ? "▲" : "▼"}
+                </button>
             </header>
 
             {abierto && (
-            <section className="mt-4">                                       
+            <section className="mx-auto mt-4 flex w-full flex-col items-center gap-4">                                       
                 {semana.dias?.map(d => (
                     <DiaItem key={d.rutinaDiaId} dia={d} rutinaId={rutinaId} />
                 ))}

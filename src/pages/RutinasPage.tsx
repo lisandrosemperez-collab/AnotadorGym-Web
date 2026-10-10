@@ -36,11 +36,13 @@ const rutinasPage = () => {
     }
 
     return (
-        <section className="p-4">
+        <section className="mx-auto w-full max-w-6xl p-4 text-center">
             <h1 className="mb-4">Mis Rutinas</h1>
-            {rutinas.map(r => (
-                <RutinaCard key={r.rutinaId} rutina={r} />
-            ))}
+            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
+                {rutinas.map(r => (
+                    <RutinaCard key={r.rutinaId} rutina={r} />
+                ))}
+            </div>
         </section>
     );
 }

@@ -17,12 +17,12 @@ const DiaItem = ({dia, rutinaId} : Props) => {
     }
 
     return (
-        <article>      
-            <header>
+        <article className="mx-auto w-full max-w-3xl text-center">
+            <header className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-between">
 
-                <div className="mt-2">
+                <div className="mt-2 min-w-0 text-center sm:text-left">
                     <h5>📅 Día {dia.numeroDia}</h5>
-                    <span className="text-gray-500">
+                    <span className="training-card-muted block break-words text-sm">
                             {dia.nombreRutinaDia}
                     </span>
                 </div>
@@ -32,22 +32,13 @@ const DiaItem = ({dia, rutinaId} : Props) => {
                     onClick={() =>
                         handleSeleccionarDia()
                     }
-                    className="
-                        px-4
-                        py-2
-                        rounded-lg
-                        font-medium
-                        transition
-                        bg-blue-600
-                        text-white
-                        hover:bg-blue-700
-                    "
+                    className="training-button-primary whitespace-nowrap px-4 py-2 font-medium"
                     >
                     Entrenar
                 </button>
             </header>
 
-            <section className="mt-4">
+            <section className="mt-4 flex w-full flex-col items-center gap-3 text-center">
                 {dia.ejercicios?.map(e => (
                     <EjercicioItem key={e.rutinaEjercicioId} rutinaEjercicio={e} />
                 ))}

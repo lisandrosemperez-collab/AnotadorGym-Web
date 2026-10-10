@@ -14,6 +14,11 @@ interface ListaEjerciciosProps {
     onCambiarRepeticiones: (indiceEjercicio: number, numeroSerie: number, repeticiones: number) => void;
 }
 
+const obtenerDatosEjercicio = (ejercicio: EjercicioEntrenadoDTO) =>
+    ejercicio.Ejercicio ?? (
+        ejercicio as EjercicioEntrenadoDTO & { ejercicio?: EjercicioDTO }
+    ).ejercicio;
+
 const ListaEjercicios: FC<ListaEjerciciosProps> = ({
     ejercicios,
     onFinalizarSerie,
@@ -66,6 +71,13 @@ const ListaEjercicios: FC<ListaEjerciciosProps> = ({
         });
     };
 
+    const ejercicioSeleccionado = ejercicioExpandido == null
+        ? null
+        : ejercicios[ejercicioExpandido] ?? null;
+    const datosEjercicioSeleccionado = ejercicioSeleccionado
+        ? obtenerDatosEjercicio(ejercicioSeleccionado)
+        : null;
+
     return (
         <div className="training-card rounded-xl shadow-md p-5 border">
 
@@ -73,15 +85,11 @@ const ListaEjercicios: FC<ListaEjerciciosProps> = ({
                 Ejercicios
             </h2>
 
-            <div className="space-y-3">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:grid-cols-[minmax(14rem,0.8fr)_minmax(0,1.6fr)]">
+                <section className="min-w-0 self-start space-y-3" aria-label="Seleccionar ejercicio">
 
                 {ejercicios.map((ejercicio, index) => {
-                    const datosEjercicio =
-                        ejercicio.Ejercicio ?? (
-                            ejercicio as EjercicioEntrenadoDTO & {
-                                ejercicio?: EjercicioDTO;
-                            }
-                        ).ejercicio;
+                    const datosEjercicio = obtenerDatosEjercicio(ejercicio);
 
                     const expandido =
                         ejercicioExpandido === index;
@@ -102,7 +110,11 @@ const ListaEjercicios: FC<ListaEjerciciosProps> = ({
                                     ? ejercicio.ejercicioEntrenadoId
                                     : `${ejercicio.ejercicioId}-${index}`
                             }
-                            className="border-[var(--color-border)] rounded-lg overflow-hidden"
+                            className={`overflow-hidden rounded-lg border ${
+                                expandido
+                                    ? "border-[var(--color-primary)]"
+                                    : "border-[var(--color-border)]"
+                            }`}
                         >
 
                             {/* Encabezado del ejercicio */}
@@ -111,19 +123,13 @@ const ListaEjercicios: FC<ListaEjerciciosProps> = ({
                                 onClick={() =>
                                     toggleEjercicio(index)
                                 }
-                                className="
-                                    w-full
-                                    flex
-                                    items-center
-                                    justify-between
-                                    p-4
-                                    text-left
-                                    hover:bg-[var(--color-background)]
-                                    transition
-                                "
+                                aria-expanded={expandido}
+                                className={`flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[var(--color-background)] ${
+                                    expandido ? "training-item-active" : "training-button-secondary"
+                                }`}
                             >
 
-                                <div>
+                                <div className="min-w-0">
                                     <p className="font-semibold text-[var(--color-text-primary)]">
                                         {datosEjercicio?.nombre ?? "Ejercicio"}
                                     </p>
@@ -137,122 +143,120 @@ const ListaEjercicios: FC<ListaEjerciciosProps> = ({
                                     </p>
                                 </div>
 
-                                <span className="training-card-muted">
-                                    {expandido ? "▲" : "▼"}
+                                <span className="training-accent shrink-0 text-xl" aria-hidden="true">
+                                    {expandido ? "←" : "→"}
                                 </span>
 
                             </button>
-
-                            {/* Detalle expandible */}
-                            {expandido && (
-                                <div className="border-t">
-                                    <section className="training-data-panel m-4">
-                                        <h3 className="training-data-heading">
-                                            Información del ejercicio
-                                        </h3>
-                                        <div className="training-data-list">
-                                            <div className="training-data-row">
-                                                <span className="training-data-label">Orden</span>
-                                                <span className="training-data-value">{ejercicio.orden}</span>
-                                            </div>
-                                            <div className="training-data-row">
-                                                <span className="training-data-label">Estado</span>
-                                                <span className="training-data-value">
-                                                    {ejercicio.completado ? "Completado" : "Pendiente"}
-                                                </span>
-                                            </div>
-                                            {datosEjercicio?.grupoMuscular?.nombre && (
-                                                <div className="training-data-row">
-                                                    <span className="training-data-label">Grupo muscular</span>
-                                                    <span className="training-data-value">
-                                                        {datosEjercicio.grupoMuscular.nombre}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {datosEjercicio?.musculoPrimario?.nombre && (
-                                                <div className="training-data-row">
-                                                    <span className="training-data-label">Músculo primario</span>
-                                                    <span className="training-data-value">
-                                                        {datosEjercicio.musculoPrimario.nombre}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {datosEjercicio?.musculosSecundarios?.length ? (
-                                                <div className="training-data-row">
-                                                    <span className="training-data-label">Músculos secundarios</span>
-                                                    <span className="training-data-value text-right">
-                                                        {datosEjercicio.musculosSecundarios
-                                                            .map(musculo => musculo.nombre)
-                                                            .join(", ")}
-                                                    </span>
-                                                </div>
-                                            ) : null}
-                                            {ejercicio.notas && (
-                                                <div>
-                                                    <p className="training-data-label">Notas</p>
-                                                    <p className="training-data-value mt-1">
-                                                        {ejercicio.notas}
-                                                    </p>
-                                                </div>
-                                            )}
-                                            {datosEjercicio?.descripcion && (
-                                                <div>
-                                                    <p className="training-data-label">Descripción</p>
-                                                    <p className="training-data-value mt-1">
-                                                        {datosEjercicio.descripcion}
-                                                    </p>
-                                                </div>
-                                            )}
-                                            {datosEjercicio?.urlVideo && (
-                                                <div>
-                                                    <p className="training-data-label">Video</p>
-                                                    <a
-                                                        className="training-accent mt-1 inline-block underline underline-offset-2"
-                                                        href={datosEjercicio.urlVideo}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                    >
-                                                        Ver video del ejercicio
-                                                    </a>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </section>
-                                    <ListaEjercicioDetalle
-                                        ejercicio={ejercicio}
-                                        onCompletarSerie={numeroSerie =>
-                                            onCompletarSerie(index, numeroSerie)
-                                        }
-                                        onEliminarSerie={numeroSerie =>
-                                            eliminarSerie(index, numeroSerie)
-                                        }
-                                        onAgregarSerie={() => onAgregarSerie(index)}
-                                        onCambiarPeso={(numeroSerie, peso) =>
-                                            onCambiarPeso(index, numeroSerie, peso)
-                                        }
-                                        onCambiarRepeticiones={(numeroSerie, repeticiones) =>
-                                            onCambiarRepeticiones(index, numeroSerie, repeticiones)
-                                        }
-                                        serieEnEjecucion={
-                                            serieEnEjecucion?.indiceEjercicio === index
-                                                ? serieEnEjecucion.numeroSerie
-                                                : null
-                                        }
-                                        haySerieEnEjecucion={serieEnEjecucion !== null}
-                                        onIniciarSerie={numeroSerie =>
-                                            iniciarSerie(index, numeroSerie)
-                                        }
-                                        onFinalizarSerie={numeroSerie =>
-                                            finalizarSerie(index, numeroSerie)
-                                        }
-                                    />
-                                </div>
-                            )}
-
                         </div>
                     );
                 })}
 
+                </section>
+
+                <section className="training-data-panel min-w-0 self-start p-0 md:sticky md:top-4" aria-live="polite" aria-label="Detalle del ejercicio seleccionado">
+                    {ejercicioSeleccionado && datosEjercicioSeleccionado ? (
+                        <>
+                            <div className="border-b border-[var(--color-border)] p-4">
+                                <h3 className="training-data-heading text-lg">
+                                    {datosEjercicioSeleccionado.nombre}
+                                </h3>
+                                <div className="training-data-list">
+                                    <div className="training-data-row">
+                                        <span className="training-data-label">Orden</span>
+                                        <span className="training-data-value">{ejercicioSeleccionado.orden}</span>
+                                    </div>
+                                    <div className="training-data-row">
+                                        <span className="training-data-label">Estado</span>
+                                        <span className="training-data-value">
+                                            {ejercicioSeleccionado.completado ? "Completado" : "Pendiente"}
+                                        </span>
+                                    </div>
+                                    {datosEjercicioSeleccionado.grupoMuscular?.nombre && (
+                                        <div className="training-data-row">
+                                            <span className="training-data-label">Grupo muscular</span>
+                                            <span className="training-data-value">
+                                                {datosEjercicioSeleccionado.grupoMuscular.nombre}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {datosEjercicioSeleccionado.musculoPrimario?.nombre && (
+                                        <div className="training-data-row">
+                                            <span className="training-data-label">Músculo primario</span>
+                                            <span className="training-data-value">
+                                                {datosEjercicioSeleccionado.musculoPrimario.nombre}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {datosEjercicioSeleccionado.musculosSecundarios?.length ? (
+                                        <div className="training-data-row">
+                                            <span className="training-data-label">Músculos secundarios</span>
+                                            <span className="training-data-value text-right">
+                                                {datosEjercicioSeleccionado.musculosSecundarios
+                                                    .map(musculo => musculo.nombre)
+                                                    .join(", ")}
+                                            </span>
+                                        </div>
+                                    ) : null}
+                                    {ejercicioSeleccionado.notas && (
+                                        <p className="training-data-value">
+                                            Notas: {ejercicioSeleccionado.notas}
+                                        </p>
+                                    )}
+                                    {datosEjercicioSeleccionado.descripcion && (
+                                        <p className="training-card-muted">
+                                            {datosEjercicioSeleccionado.descripcion}
+                                        </p>
+                                    )}
+                                    {datosEjercicioSeleccionado.urlVideo && (
+                                        <a
+                                            className="training-accent inline-block underline underline-offset-2"
+                                            href={datosEjercicioSeleccionado.urlVideo}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            Ver video del ejercicio
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                            <ListaEjercicioDetalle
+                                ejercicio={ejercicioSeleccionado}
+                                onCompletarSerie={numeroSerie =>
+                                    onCompletarSerie(ejercicioExpandido!, numeroSerie)
+                                }
+                                onEliminarSerie={numeroSerie =>
+                                    eliminarSerie(ejercicioExpandido!, numeroSerie)
+                                }
+                                onAgregarSerie={() => onAgregarSerie(ejercicioExpandido!)}
+                                onCambiarPeso={(numeroSerie, peso) =>
+                                    onCambiarPeso(ejercicioExpandido!, numeroSerie, peso)
+                                }
+                                onCambiarRepeticiones={(numeroSerie, repeticiones) =>
+                                    onCambiarRepeticiones(ejercicioExpandido!, numeroSerie, repeticiones)
+                                }
+                                serieEnEjecucion={
+                                    serieEnEjecucion?.indiceEjercicio === ejercicioExpandido
+                                        ? serieEnEjecucion.numeroSerie
+                                        : null
+                                }
+                                haySerieEnEjecucion={serieEnEjecucion !== null}
+                                onIniciarSerie={numeroSerie =>
+                                    iniciarSerie(ejercicioExpandido!, numeroSerie)
+                                }
+                                onFinalizarSerie={numeroSerie =>
+                                    finalizarSerie(ejercicioExpandido!, numeroSerie)
+                                }
+                            />
+                        </>
+                    ) : (
+                        <div className="p-6 text-center">
+                            <p className="training-card-muted">
+                                Seleccioná un ejercicio para ver sus series.
+                            </p>
+                        </div>
+                    )}
+                </section>
             </div>
 
         </div>

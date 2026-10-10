@@ -501,7 +501,7 @@ const EntrenamientoPage = () => {
                   className="training-button-primary px-4 py-2"
                   onClick={handleFinalizarEntrenamiento}
               >
-                  Finalizar entrenamiento
+                  Finalizar
               </button>
           </div>
       )}

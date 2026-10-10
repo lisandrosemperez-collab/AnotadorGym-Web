@@ -33,7 +33,6 @@ export const TabBar = () => {
                         <span className="max-w-[38vw] break-words text-sm font-semibold sm:max-w-48">
                             {userName ?? "Usuario"}
                         </span>
-                        <small>ID: {userId ?? "-"}</small>
                     </div>
                     <button
                         type="button"
@@ -45,7 +44,7 @@ export const TabBar = () => {
                 </div>
             </div>
 
-            <ul className="m-0 grid w-full list-none grid-cols-3 gap-2 p-0 sm:grid-cols-5 lg:col-start-2 lg:row-start-1 lg:flex lg:w-auto lg:justify-center lg:gap-4">
+            <ul className="m-0 grid w-full list-none grid-cols-3 gap-2 p-0 sm:grid-cols-6 lg:col-start-2 lg:row-start-1 lg:flex lg:w-auto lg:justify-center lg:gap-4">
                 <li className="min-w-0">
                     <NavLink to="/ejercicios" className={({ isActive }) => `nav-item w-full min-w-0 justify-center rounded-md px-1 py-2 text-center lg:min-w-[4.5rem] ${isActive ? "active" : ""}`}>
                         <span>🏋️</span>
@@ -57,6 +56,13 @@ export const TabBar = () => {
                     <NavLink to="/rutinas" className={({ isActive }) => `nav-item w-full min-w-0 justify-center rounded-md px-1 py-2 text-center lg:min-w-[4.5rem] ${isActive ? "active" : ""}`}>
                         <span>📋</span>
                         <h4 className="break-words text-xs font-medium">Rutinas</h4>
+                    </NavLink>
+                </li>
+
+                <li className="min-w-0">
+                    <NavLink to="/estadisticas" className={({ isActive }) => `nav-item w-full min-w-0 justify-center rounded-md px-1 py-2 text-center lg:min-w-[4.5rem] ${isActive ? "active" : ""}`}>
+                        <span>📈</span>
+                        <h4 className="break-words text-xs font-medium">Estadísticas</h4>
                     </NavLink>
                 </li>
 
